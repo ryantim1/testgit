@@ -35,7 +35,7 @@ class StudentQuizController extends Controller
      */
     public function index()
     {
-      if(checkRole(getUserGrade(2)))
+      if(checkRole(getUserGrade(4)))
       {
         return back();
       }
@@ -54,11 +54,10 @@ class StudentQuizController extends Controller
 
         $data['categories']         = QuizCategory::
                                       whereIn('id',(array) $interested_categories->quiz_categories)
+                                      ->where('section_id',Auth::user()->section_id)
                                       ->paginate(getRecordsPerPage());
         }
         $data['layout']              = getLayout();
-        $user = Auth::user();
-
       // return view('student.exams.categories', $data);
 
             $view_name = getTheme().'::student.exams.categories';
@@ -1060,14 +1059,14 @@ class StudentQuizController extends Controller
         {
 
              $cats  = User::getUserSeleted('categories');
-
+            // $users=User::select('id')->where('institute_id',Auth::user()->institute_id)->get();
             $records = Quiz::join('quizcategories', 'quizzes.category_id', '=', 'quizcategories.id')
             ->select(['title', 'dueration', 'category', 'is_paid', 'total_marks','tags','quizzes.slug','quizzes.validity','quizzes.cost' ])
-            ->where('total_marks', '!=', 0)
-            ->where('start_date','<=',date('Y-m-d'))
-            ->where('end_date','>=',date('Y-m-d'))
+            //->where('total_marks', '!=', 0)
+            ->where('quizzes.section_id',Auth::user()->section_id)
+            //->where('start_date','<=',date('Y-m-d'))
+            //->where('end_date','>=',date('Y-m-d'))
             ->whereIn('quizzes.category_id',$cats)
-            //->whereIn('record_updated_by',User::select('id')->where('institute_id',Auth::user()->institute_id)->pluck('id'))
             ->get();
 
         }
@@ -1078,10 +1077,10 @@ class StudentQuizController extends Controller
         $records = Quiz::join('quizcategories', 'quizzes.category_id', '=', 'quizcategories.id')
             ->select(['title', 'dueration', 'category', 'is_paid', 'total_marks','quizzes.slug', 'quizzes.validity','quizzes.cost' ])
             ->where('quizzes.category_id', '=', $category->id)
-            ->where('total_marks', '!=', 0)
-            ->where('start_date','<=',date('Y-m-d'))
-            ->where('end_date','>=',date('Y-m-d'))
-            ->whereIn('record_updated_by',User::select('id')->where('institute_id',Auth::user()->institute_id)->pluck('id'))
+            ->where('quizzes.section_id',Auth::user()->section_id)
+            //->where('total_marks', '!=', 0)
+            //->where('start_date','<=',date('Y-m-d'))
+            //->where('end_date','>=',date('Y-m-d'))
             ->get();
         }
 

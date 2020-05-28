@@ -20,7 +20,7 @@
 
 <div class="panel panel-custom col-lg-6  col-lg-offset-3">
 <div class="panel-heading">
-<?php if(checkRole(getUserGrade(2))): ?> 
+<?php if(checkRole(getUserGrade(2))): ?>
 <div class="pull-right messages-buttons"><a href="<?php echo e(URL_USERS); ?>" class="btn  btn-primary button" ><?php echo e(getPhrase('list')); ?></a></div>
 <?php endif; ?>
 <h1><?php echo e($title); ?>  </h1>
@@ -29,9 +29,9 @@
 <div class="panel-body form-auth-style">
 <?php $button_name = getPhrase('create'); ?>
 <?php if($record): ?>
-<?php $button_name = getPhrase('update'); ?>
-<?php echo e(Form::model($record, 
-array('url' => URL_USERS_EDIT.$record->slug, 
+<?php $button_name = getPhrase('update');  ?>
+<?php echo e(Form::model($record,
+array('url' => URL_USERS_EDIT.$record->slug,
 'method'=>'patch','novalidate'=>'','name'=>'formUsers ', 'files'=>'true' ))); ?>
 
 <?php else: ?>
@@ -39,7 +39,11 @@ array('url' => URL_USERS_EDIT.$record->slug,
 
 <?php endif; ?>
 
-<?php echo $__env->make('users.form_elements', array('button_name'=> $button_name, 'record' => $record), array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php if((checkRole(getUserGrade(2)))): ?>
+    <?php echo $__env->make('users.form_elements', array('button_name'=> $button_name, 'record' => $record, 'sections' => $sections), array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php else: ?>
+    <?php echo $__env->make('users.form_elements', array('button_name'=> $button_name, 'record' => $record), array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php endif; ?>
 
 <?php echo Form::close(); ?>
 
@@ -65,7 +69,7 @@ file.onchange = function(e){
         case 'jpeg':
         case 'png':
 
-     
+
             break;
         default:
                alertify.error("<?php echo e(getPhrase('file_type_not_allowed')); ?>");
@@ -74,4 +78,5 @@ file.onchange = function(e){
 };
  </script>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make($layout, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

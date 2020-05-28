@@ -584,6 +584,7 @@ CREATE TABLE `lmscategories` (
   `image` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `description` text COLLATE utf8_unicode_ci NOT NULL,
   `record_updated_by` int(11) NOT NULL,
+  `section_id` bigint(11) UNSIGNED NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -618,6 +619,7 @@ CREATE TABLE `lmscontents` (
   `file_path` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `description` text COLLATE utf8_unicode_ci NOT NULL,
   `record_updated_by` int(11) NOT NULL,
+  `section_id` bigint(11) UNSIGNED NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -1623,6 +1625,7 @@ CREATE TABLE `quizcategories` (
   `image` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `description` text COLLATE utf8_unicode_ci NOT NULL,
   `record_updated_by` int(11) NOT NULL,
+  `section_id` bigint(11) UNSIGNED NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -1721,6 +1724,7 @@ CREATE TABLE `quizzes` (
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
   `record_updated_by` int(11) NOT NULL,
+  `section_id` bigint(11) UNSIGNED NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `show_in_front` tinyint(2) NOT NULL DEFAULT 0,
@@ -1841,6 +1845,7 @@ CREATE TABLE `roles` (
 INSERT INTO `roles` (`id`, `name`, `display_name`, `description`, `created_at`, `updated_at`) VALUES
 (1, 'owner', 'Owner', 'Owner of this account', '2016-06-08 03:32:59', '2016-06-08 03:32:59'),
 (2, 'admin', 'Admin', 'Admin of this Account', '2016-06-08 03:33:19', '2016-06-08 03:33:19'),
+(3, 'teacher', 'Teacher', 'Teacher', '2016-06-08 03:33:19', '2016-06-08 03:33:19'),
 (5, 'student', 'Student', 'Student User', '2016-06-08 04:01:54', '2016-06-08 04:01:54'),
 (6, 'parent', 'Parent User', 'Parent Login', '2016-06-08 07:35:27', '2016-06-08 07:35:27');
 
@@ -2183,6 +2188,7 @@ INSERT INTO `users` (`id`, `name`, `username`, `email`, `password`, `slug`, `log
 (7, 'John', 'Student', 'student@student.com', '$2y$10$RB1eIn5lzym2PlaQg3rtBuMrUKdSmaDStQBLoB.eLgf96KbAlYoSy', 'john-17', 1, 5, 10, '7.jpeg', '7897897897', '4089 Charles Street\r\nDexter, MI 48130', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'BpRVxYmEVnzKGTb5byS0nEm2WpGB4lm66r9rfJsH1LDHOxbZq8pmDaSvf0XX', '{\"user_preferences\":{\"quiz_categories\":[1,3,4,5,6,7],\"lms_categories\":[1,2,3,4,5,6]}}', NULL, '2018-04-03 08:59:59', '2019-06-11 04:46:12', 1, NULL, 'M.Tech', 'Electronics and Communications', '99872', 'University of Hyderabad', 'Hyderabad', 'Telangana', 'India', '\r\n\r\n    Greeted and proactively assisted visitors in a timely manner\r\n    Guaranteed prompt delivery of incoming mail to appropriate recipients\r\n    Streamlined processes to effectively track, order, and maintain inventory\r\n\r\n', '\r\n\r\n    Greeted and proactively assisted visitors in a timely manner\r\n    Guaranteed prompt delivery of incoming mail to appropriate recipients\r\n    Streamlined processes to effectively track, order, and maintain inventory\r\n\r\n', 'Male', '2016-06-17', 'Unmarried', 'Indian', 'David', 'Hindi,English, Telugu', 'PAS45645', '101 School Drive\r\nSimpsonville, SC 29680', 'Compassion.\r\nOptimism or Realism.\r\nCommitment and Loyalty.\r\nResilience.\r\nSelf-confidence.\r\nSelf-Control.\r\nSense of direction', NULL, NULL, 'Looking for a challenging role in a reputable organization to utilize my technical, database, and management skills for the growth of the organization as well as to enhance my knowledge about new and emerging trends in the IT sector.', 'I hereby declare that the information furnished above is true to the best of my knowledge. I do hereby declare that above particulars of information and facts stated are true, correct and complete to the best of my knowledge and belief.'),
 (10, 'Parent', 'Parent', 'parent@parent.com', '$2y$10$RB1eIn5lzym2PlaQg3rtBuMrUKdSmaDStQBLoB.eLgf96KbAlYoSy', 'parent-9', 1, 6, NULL, '', '7897897897', 'This is my Test Address', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'fcWjxmWienDppMhboFLsyTi2xOMJJYtXDA1fFmmGqYVg4PH72Wgb0ombSeQe', '{\"user_preferences\":{\"quiz_categories\":[1,2,3,4,5],\"lms_categories\":[1,2,3,4,5,6]}}', NULL, '2018-04-03 10:51:01', '2018-04-03 12:54:43', 1, NULL, NULL, NULL, '99874', 'IIT', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (12, 'Admin', 'admin', 'admin@admin.com', '$2y$10$RB1eIn5lzym2PlaQg3rtBuMrUKdSmaDStQBLoB.eLgf96KbAlYoSy', 'admin-11', 1, 2, NULL, '', '9966874626', 'Hyderabad', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '41D7Gy2aqYRbtLTtb3eSU6zcADYbYcjDWrcZEnUT3t8Tkh2pxzGT5eUaWsMf', NULL, NULL, '2019-05-21 23:16:25', '2019-05-21 23:16:25', 1, NULL, NULL, NULL, '89781', 'ACE', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(74, 'Teacher', 'teacher', 'teacher@teacher.com', '$2y$10$RB1eIn5lzym2PlaQg3rtBuMrUKdSmaDStQBLoB.eLgf96KbAlYoSy', 'teacher-12', 1, 2, NULL, '', '9966874626', 'Hyderabad', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '41D7Gy2aqYRbtLTtb3eSU6zcADYbYcjDWrcZEnUT3t8Tkh2pxzGT5eUaWsMf', NULL, NULL, '2019-05-21 23:16:25', '2019-05-21 23:16:25', 1, NULL, NULL, NULL, '89781', 'ACE', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (71, 'Chris', 'chris', 'chris@owner.com', '$2y$10$RB1eIn5lzym2PlaQg3rtBuMrUKdSmaDStQBLoB.eLgf96KbAlYoSy', 'chris-35', 1, 1, NULL, '', NULL, '', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2020-04-26 04:54:07', '2020-04-26 04:54:07', 1, NULL, NULL, NULL, '89771', 'Manchester', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------

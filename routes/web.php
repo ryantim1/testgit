@@ -22,19 +22,6 @@ if(env('DB_DATABASE')=='')
    Route::post('/install', 'InstallatationController@installProject');
 }
 
-/*Route::get('/{slug?}', function () {
-    $cats  = User::getUserSeleted('categories');
-    $records = Quiz::join('quizcategories', 'quizzes.category_id', '=', 'quizcategories.id')
-    ->select(['title', 'dueration', 'category', 'is_paid', 'total_marks','tags','quizzes.slug','quizzes.validity','quizzes.cost' ])
-    ->where('total_marks', '!=', 0)
-    ->where('start_date','<=',date('Y-m-d'))
-    ->where('end_date','>=',date('Y-m-d'))
-    ->whereIn('quizzes.category_id',$cats)
-    ->get();
-    dd($records);
-});
-
-*/
 
 Route::get('/', function () {
 

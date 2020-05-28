@@ -269,11 +269,13 @@
 
 						<span class="text-red">*</span>
 
-						<?php $disabled = (checkRole(getUserGrade(2))) ? '' :'disabled';
+						<?php $disabled = (checkRole(getUserGrade(1))) ? '' :'disabled';
 
 
-
-						$selected = getRoleData('student');
+						if(checkRole(getUserGrade(2)))
+							$selected = getRoleData('teacher');
+						else
+							$selected = getRoleData('student');
 
 						if($record)
 
@@ -284,6 +286,8 @@
 						{{Form::select('role_id', $roles, $selected, ['placeholder' => getPhrase('select_role'),'class'=>'form-control', $disabled,
 
 							'ng-model'=>'role_id',
+
+							'value' => $selected,
 
 							'required'=> 'true',
 
@@ -298,6 +302,46 @@
 
 
 						</div>
+
+
+
+					</fieldset>
+
+					@endif
+
+					@if((checkRole(getUserGrade(2))))
+
+					<fieldset class="form-group">
+
+
+
+						{{ Form::label('Section', 'Assign as Class teacher (Optional)') }}
+
+						<span class="text-red"></span>
+
+						{{ Form::text('section', $value = null , $attributes = array('class'=>'form-control', 'placeholder' => 'Section name',
+
+							'ng-model'=>'section',
+
+							'list'=>'section-list',
+
+							'ng-minlength' => '2',
+
+							'ng-maxlength' => '20'
+
+
+
+						)) }}
+
+						<datalist id="section-list">
+							@foreach($sections as $section)
+								<option value="{{ $section }}"/>
+							@endforeach
+						</datalist>
+
+						<div class="validation-error" ng-messages="formUsers.name.$error" >
+
+
 
 
 

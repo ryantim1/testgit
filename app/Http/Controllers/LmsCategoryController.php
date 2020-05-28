@@ -13,6 +13,7 @@ use Auth;
 use Image;
 use ImageSettings;
 use File;
+use App\User;
 
 class LmsCategoryController extends Controller
 {
@@ -39,7 +40,7 @@ class LmsCategoryController extends Controller
      */
     public function index()
     {
-        if(!checkRole(getUserGrade(2)))
+        if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
@@ -50,7 +51,7 @@ class LmsCategoryController extends Controller
 
            $view_name = getTheme().'::lms.lmscategories.list';
         return view($view_name, $data);
-        
+
     }
 
     /**
@@ -59,18 +60,19 @@ class LmsCategoryController extends Controller
      */
     public function getDatatable()
     {
-        if(!checkRole(getUserGrade(2)))
+        if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
       }
 
-         $records = LmsCategory::select([   
-         	'category', 'image', 'description', 'id','slug']);
+         $records = LmsCategory::select([
+         	'category', 'image', 'description', 'id','slug'])
+            ->where('record_updated_by',Auth::user()->id);
         $this->setSettings();
         return Datatables::of($records)
         ->addColumn('action', function ($records) {
-         
+
 
             return '<div class="dropdown more">
                         <a id="dLabel" type="button" class="more-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -78,7 +80,7 @@ class LmsCategoryController extends Controller
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dLabel">
                             <li><a href="'.URL_LMS_CATEGORIES_EDIT.$records->slug.'"><i class="fa fa-pencil"></i>'.getPhrase("edit").'</a></li>
-                            
+
                             <li><a href="javascript:void(0);" onclick="deleteRecord(\''.$records->slug.'\');"><i class="fa fa-trash"></i>'. getPhrase("delete").'</a></li>
                         </ul>
                     </div>';
@@ -100,7 +102,7 @@ class LmsCategoryController extends Controller
      */
     public function create()
     {
-        if(!checkRole(getUserGrade(2)))
+        if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
@@ -108,6 +110,7 @@ class LmsCategoryController extends Controller
     	$data['record']         	= FALSE;
     	$data['active_class']       = 'lms';
     	$data['title']              = getPhrase('create_category');
+        $data['sections']           = array_pluck(User::where('institute_id',Auth::user()->institute_id)->whereNotNull('section_id')->distinct()->get(),'section_name','section_id');
     	// return view('lms.lmscategories.add-edit', $data);
 
          $view_name = getTheme().'::lms.lmscategories.add-edit';
@@ -117,11 +120,11 @@ class LmsCategoryController extends Controller
     /**
      * This method loads the edit view based on unique slug provided by user
      * @param  [string] $slug [unique slug of the record]
-     * @return [view with record]       
+     * @return [view with record]
      */
     public function edit($slug)
     {
-        if(!checkRole(getUserGrade(2)))
+        if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
@@ -133,6 +136,7 @@ class LmsCategoryController extends Controller
     	$data['record']       		= $record;
     	$data['active_class']       = 'lms';
     	$data['title']              = getPhrase('edit_category');
+        $data['sections']           = array_pluck(User::where('institute_id',Auth::user()->institute_id)->whereNotNull('section_id')->distinct()->get(),'section_name','section_id');
     	// return view('lms.lmscategories.add-edit', $data);
           $view_name = getTheme().'::lms.lmscategories.add-edit';
         return view($view_name, $data);
@@ -146,7 +150,7 @@ class LmsCategoryController extends Controller
      */
     public function update(Request $request, $slug)
     {
-        if(!checkRole(getUserGrade(2)))
+        if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
@@ -158,13 +162,13 @@ class LmsCategoryController extends Controller
          'category'          	   => 'bail|required|max:60' ,
           ];
          /**
-        * Check if the title of the record is changed, 
+        * Check if the title of the record is changed,
         * if changed update the slug value based on the new title
         */
        $name = $request->category;
         if($name != $record->category)
             $record->slug = $record->makeSlug($name,TRUE);
-      
+
        //Validate the overall request
        $this->validate($request, $rules);
     	$record->category 			= $name;
@@ -193,12 +197,12 @@ class LmsCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        if(!checkRole(getUserGrade(2)))
+        if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
       }
-       
+
 	    $rules = [
          'category'          	   => 'bail|required|max:60' ,
             ];
@@ -228,24 +232,24 @@ class LmsCategoryController extends Controller
         flash('success','record_added_successfully', 'success');
     	return redirect(URL_LMS_CATEGORIES);
     }
- 
+
     /**
      * Delete Record based on the provided slug
      * @param  [string] $slug [unique slug]
-     * @return Boolean 
+     * @return Boolean
      */
     public function delete($slug)
     {
-        if(!checkRole(getUserGrade(2)))
+        if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
       }
         $record = LmsCategory::where('slug', $slug)->first();
- 
+
         try{
         $this->setSettings();
-        
+
         $examSettings = $this->getSettings();
         $path = IMAGE_PATH_UPLOAD_LMS_CATEGORIES;
         $r =  $record;
@@ -253,7 +257,7 @@ class LmsCategoryController extends Controller
             $record->delete();
             $this->deleteFile($r->image, $path);
         }
-        
+
             $response['status'] = 1;
             $response['message'] = getPhrase('category_deleted_successfully');
         }
@@ -310,13 +314,13 @@ class LmsCategoryController extends Controller
 
          if ($request->hasFile($file_name)) {
           $settings = json_decode((new LmsSettings())->getSettings());
-          
-          
+
+
           $destinationPath      = $settings->categoryImagepath;
           $fileName = $record->id.'-'.$file_name.'.'.$request->$file_name->guessClientExtension();
-          
+
           $request->file($file_name)->move($destinationPath, $fileName);
-         
+
          //Save Normal Image with 300x300
           Image::make($destinationPath.$fileName)->fit($settings->imageSize)->save($destinationPath.$fileName);
          return $fileName;

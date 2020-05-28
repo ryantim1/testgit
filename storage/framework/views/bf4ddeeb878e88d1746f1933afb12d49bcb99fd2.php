@@ -1,5 +1,5 @@
 
- 
+
 <?php $__env->startSection('content'); ?>
 
 <div id="page-wrapper">
@@ -16,12 +16,12 @@
 				</div>
 					<?php echo $__env->make('errors.errors', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 				<!-- /.row -->
-				<?php 
-					$settings = ($record) ? $settings : ''; 
+				<?php
+					$settings = ($record) ? $settings : '';
 				?>
 
 				<div class="panel panel-custom col-lg-6 col-lg-offset-3" ng-init="initAngData('<?php echo e($settings); ?>');" ng-controller="angLmsController">
-					<div class="panel-heading"> 
+					<div class="panel-heading">
 						<div class="pull-right messages-buttons">
 							<a href="<?php echo e(URL_LMS_CONTENT); ?>" class="btn  btn-primary button" ><?php echo e(getPhrase('list')); ?></a>
 						</div>
@@ -31,34 +31,34 @@
 					<?php $button_name = getPhrase('create'); ?>
 					<?php if($record): ?>
 					 <?php $button_name = getPhrase('update'); ?>
-						<?php echo e(Form::model($record, 
+						<?php echo e(Form::model($record,
 						array('url' => URL_LMS_CONTENT_EDIT. $record->slug, 'novalidate'=>'','name'=>'formLms ',
 						'method'=>'patch', 'files' => true))); ?>
 
 					<?php else: ?>
-						<?php echo Form::open(array('url' => URL_LMS_CONTENT_ADD, 
+						<?php echo Form::open(array('url' => URL_LMS_CONTENT_ADD,
 							'novalidate'=>'','name'=>'formLms ',
 						'method' => 'POST', 'files' => true)); ?>
 
 					<?php endif; ?>
-					 <?php echo $__env->make('lms.lmscontents.form_elements', 
+					 <?php echo $__env->make('lms.lmscontents.form_elements',
 					 array('button_name'=> $button_name),
 					 array('subjects'=>$subjects, 'record'=>$record), array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 					 	 	
 					<?php echo Form::close(); ?>
 
-					</div> 
-  
+					</div>
+
 				</div>
 			</div>
 			<!-- /.container-fluid -->
 		</div>
 		<!-- /#page-wrapper -->
 <?php $__env->stopSection(); ?>
-<?php $__env->startSection('footer_scripts'); ?>   
+<?php $__env->startSection('footer_scripts'); ?>
 <?php echo $__env->make('lms.lmscontents.scripts.js-scripts', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 <?php echo $__env->make('common.validations', array('isLoaded'=>'1'), array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>;
-<?php echo $__env->make('common.editor', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>; 
+<?php echo $__env->make('common.editor', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>;
   <?php echo $__env->make('common.alertify', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
    <script>
  	var file = document.getElementById('image_input');
@@ -71,7 +71,7 @@ file.onchange = function(e){
         case 'jpeg':
         case 'png':
 
-     
+
             break;
         default:
                alertify.error("<?php echo e(getPhrase('file_type_not_allowed')); ?>");
@@ -80,5 +80,5 @@ file.onchange = function(e){
 };
  </script>
 <?php $__env->stopSection(); ?>
- 
+
 <?php echo $__env->make($layout, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

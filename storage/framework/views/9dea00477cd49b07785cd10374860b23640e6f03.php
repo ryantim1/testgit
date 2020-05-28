@@ -1,5 +1,5 @@
 
-<link href="<?php echo e(CSS); ?>bootstrap-datepicker.css" rel="stylesheet">	
+<link href="<?php echo e(CSS); ?>bootstrap-datepicker.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="<?php echo e(CSS); ?>select2.css">
 
 <style>
@@ -42,7 +42,7 @@
 
 				<!-- /.row -->
 
-				
+
 
 				<div class="panel panel-custom" >
 
@@ -54,7 +54,7 @@
 
 						</div>
 
-						
+
 
 					<h1><?php echo e($title); ?>  </h1>
 
@@ -68,9 +68,9 @@
 
 					 <?php $button_name = getPhrase('update'); ?>
 
-						<?php echo e(Form::model($record, 
+						<?php echo e(Form::model($record,
 
-						array('url' => URL_QUIZ_EDIT.'/'.$record->slug, 
+						array('url' => URL_QUIZ_EDIT.'/'.$record->slug,
 
 						'method'=>'patch', 'files' => true, 'name'=>'formQuiz ', 'novalidate'=>'','files'=>TRUE))); ?>
 
@@ -82,11 +82,11 @@
 
 					<?php endif; ?>
 
-					
 
 
 
-					 <?php echo $__env->make('exams.quiz.form_elements', 
+
+					 <?php echo $__env->make('exams.quiz.form_elements',
 
 					 array('button_name'=> $button_name),
 
@@ -95,12 +95,12 @@
 					 		'instructions' 		=> $instructions,
 
 					 		'record'			=> $record,
-					 		
+
 					 		'exam_types'			=> $exam_types
 
 					 		), array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 
-					 		
+
 
 					<?php echo Form::close(); ?>
 
@@ -126,11 +126,11 @@
 <?php $__env->startSection('footer_scripts'); ?>
 
  <?php echo $__env->make('common.validations', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
- 
+
 <script src="<?php echo e(JS); ?>datepicker.min.js"></script>
  <script src="<?php echo e(JS); ?>select2.js"></script>
 
-  
+
 
  <script>
  	  $('.input-daterange').datepicker({
@@ -146,7 +146,4 @@
 
 <?php $__env->stopSection(); ?>
 
- 
-
- 
 <?php echo $__env->make('layouts.admin.adminlayout', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

@@ -38,7 +38,7 @@ class UsersController extends Controller
     */
      public function index($role = 'student')
      {
-        if(!checkRole(getUserGrade(2)))
+        if(!checkRole(getUserGrade(3)))
         {
           prepareBlockUserMessage();
           return back();
@@ -50,7 +50,6 @@ class UsersController extends Controller
         $data['heading']      = getPhrase('users');
         $data['title']        = getPhrase('users');
         // return view('users.list-users', $data);
-
          $view_name = getTheme().'::users.list-users';
          //dd($data);
         return view($view_name, $data);
@@ -124,8 +123,7 @@ class UsersController extends Controller
             })
 
          ->editColumn('name', function($records) {
-          if(getRoleData($records->role_id)=='student')
-            return '<a href="'.URL_USER_DETAILS.$records->slug.'">'.ucfirst($records->name).'</a>';
+              return '<a href="'.URL_USER_DETAILS.$records->slug.'">'.ucfirst($records->name).'</a>';
 
           return ucfirst($records->name);
         })
@@ -158,11 +156,13 @@ class UsersController extends Controller
       */
      public function create()
      {
-        if(!checkRole(getUserGrade(4)))
+        // dd( (Auth::user()->section_id==NULL) );
+        if((checkRole(getUserGrade(6)) && (Auth::user()->section_id==NULL) ) && !(checkRole(getUserGrade(2)))  )
         {
           prepareBlockUserMessage();
           return back();
         }
+
 
         $data['record']       = FALSE;
         $data['active_class'] = 'users';
@@ -188,7 +188,7 @@ class UsersController extends Controller
         $data['layout']       = getLayout();
 
         // return view('users.add-edit-user', $data);
-
+        $data['sections']=User::select('section_name')->where('institute_id',Auth::user()->institute_id)->distinct()->pluck('section_name');
          $view_name = getTheme().'::users.add-edit-user';
         return view($view_name, $data);
      }
@@ -229,26 +229,49 @@ class UsersController extends Controller
         'password'=> 'bail|required|min:5',
         'password_confirmation'=>'bail|required|min:5|same:password',
         );
-
-        if(checkRole(getUserGrade(2)))
+        //dd($request->role_id);
+        if(checkRole(getUserGrade(1)))
           $columns['role_id']  = 'bail|required';
 
 
 
         $this->validate($request,$columns);
 
-        $role_id = getRoleData('student');
 
-        if($request->role_id)
-          $role_id = $request->role_id;
+        if(checkRole(getUserGrade(2)))
+            $role_id = getRoleData('teacher');
+        else
+            $role_id = getRoleData('student');
 
-        $user           = new User();
-        $name           = $request->name;
-        $user->name     = $name;
-        $user->email    = $request->email;
-       // $user->inst_name= $request->inst_name;
-        $password       = $request->password;
-        $user->password = bcrypt($password);
+
+        $user               = new User();
+        $name               = $request->name;
+        $user->name         = $name;
+        $user->email        = $request->email;
+        $user->institute_id = Auth::user()->institute_id;
+        $user->inst_name    = Auth::user()->inst_name;
+        if(checkRole(getUserGrade(6))){
+            $user->section_id   = Auth::user()->section_id;
+            $user->section_name = Auth::user()->section_name;
+        }
+        else if(checkRole(getUserGrade(2))){
+            if($request->section){
+                $sect_id=User::select('section_id')
+                            ->where('institute_id',Auth::user()->institute_id)
+                            ->where('section_name',$request->section)->pluck('section_id')->first();
+
+                if($sect_id==NULL){
+                    $sect_id=User::select('section_id')
+                                ->orderBy('section_id','asc')
+                                ->pluck('section_id')
+                                ->last()+1;
+                }
+                $user->section_id   = $sect_id;
+                $user->section_name = $request->section ;
+            }
+        }
+        $password           = $request->password;
+        $user->password     = bcrypt($password);
 
 
         if(checkRole(['parent']))
@@ -434,13 +457,10 @@ class UsersController extends Controller
       if(!$UserOwnAccount)  {
         $current_user_role = getRoleData($record->role_id);
 
-        if((($current_user_role=='admin' || $current_user_role == 'owner') ))
-        {
-          if(!checkRole(getUserGrade(1))) {
+          if(!checkRole(getUserGrade(3))) {
             prepareBlockUserMessage();
             return back();
           }
-        }
       }
 
         $data['record']             = $record;
@@ -469,6 +489,8 @@ class UsersController extends Controller
         $data['active_class']       = 'users';
         $data['title']              = getPhrase('edit_user');
         $data['layout']             = getLayout();
+        $data['sections']=User::select('section_name')->where('institute_id',Auth::user()->institute_id)->distinct()->pluck('section_name');
+
         // dd($data);
         // return view('users.add-edit-user', $data);
 
@@ -497,8 +519,8 @@ class UsersController extends Controller
         if(!isEligible($slug))
           return back();
 
-        if(checkRole(getUserGrade(2)))
-          $validation['role_id'] = 'bail|required|integer';
+        //if(checkRole(getUserGrade(2)))
+          //$validation['role_id'] = 'bail|required|integer';
 
 
         $this->validate($request, $validation);
@@ -514,7 +536,35 @@ class UsersController extends Controller
         //$record->inst_name = $inst_name;
 
         if(checkRole(getUserGrade(2)))
-          $record->role_id  = $request->role_id;
+            $role_id = getRoleData('teacher');
+        else
+            $role_id = getRoleData('student');
+
+        if(checkRole(getUserGrade(6))){
+            $record->section_id   = Auth::user()->section_id;
+            $record->section_name = Auth::user()->section_name;
+
+        }
+        else if(checkRole(getUserGrade(2))){
+            $sect_id=NULL;
+            if($request->section){
+                $sect_id=User::select('section_id')
+                                ->where('institute_id',Auth::user()->institute_id)
+                                ->where('section_name',$request->section)->pluck('section_id')->first();
+
+                if($sect_id==NULL){
+                    $sect_id=User::select('section_id')
+                                    ->orderBy('section_id','asc')
+                                    ->pluck('section_id')
+                                    ->last()+1;
+                }
+            }
+            $record->section_id   = $sect_id;
+            $record->section_name = $request->section ;
+        }
+
+
+
        $record->phone = $request->phone;
        $record->address = $request->address;
        $record->save();
@@ -804,7 +854,7 @@ class UsersController extends Controller
     */
      public function importUsers($role = 'student')
      {
-        if(!checkRole(getUserGrade(2)))
+        if(!checkRole(getUserGrade(3)))
         {
           prepareBlockUserMessage();
           return back();

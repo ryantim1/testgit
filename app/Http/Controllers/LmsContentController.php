@@ -15,9 +15,11 @@ use Image;
 use ImageSettings;
 use File;
 use Exception;
+use App\User;
+
 class LmsContentController extends Controller
 {
-    
+
     public function __construct()
     {
     	$this->middleware('auth');
@@ -41,7 +43,7 @@ class LmsContentController extends Controller
      */
     public function index()
     {
-       if(!checkRole(getUserGrade(2)))
+       if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
@@ -61,7 +63,7 @@ class LmsContentController extends Controller
      */
     public function getDatatable()
     {
-      if(!checkRole(getUserGrade(2)))
+      if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
@@ -69,6 +71,7 @@ class LmsContentController extends Controller
 
     $records = LmsContent::join('subjects', 'lmscontents.subject_id', '=', 'subjects.id')
     		->select(['lmscontents.title','lmscontents.image','lmscontents.content_type', 'subjects.subject_title','lmscontents.slug', 'lmscontents.id','lmscontents.updated_at' ])
+            ->where('record_updated_by',Auth::user()->id)
             ->orderBy('updated_at','desc')
             ;
         $this->setSettings();
@@ -92,9 +95,9 @@ class LmsContentController extends Controller
         ->removeColumn('slug')
         ->editColumn('image', function($records){
             $image_path = IMAGE_PATH_UPLOAD_LMS_DEFAULT;
-            
+
             if($records->image)
-            $image_path = IMAGE_PATH_UPLOAD_LMS_CONTENTS.$records->image;    
+            $image_path = IMAGE_PATH_UPLOAD_LMS_CONTENTS.$records->image;
 
             return '<img src="'.$image_path.'" height="100" width="100" />';
         })
@@ -107,7 +110,7 @@ class LmsContentController extends Controller
      */
     public function create()
     {
-       if(!checkRole(getUserGrade(2)))
+       if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
@@ -126,11 +129,11 @@ class LmsContentController extends Controller
     /**
      * This method loads the edit view based on unique slug provided by user
      * @param  [string] $slug [unique slug of the record]
-     * @return [view with record]       
+     * @return [view with record]
      */
     public function edit($slug)
     {
-      if(!checkRole(getUserGrade(2)))
+      if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
@@ -158,7 +161,7 @@ class LmsContentController extends Controller
      */
     public function update(Request $request, $slug)
     {
-      if(!checkRole(getUserGrade(2)))
+      if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
@@ -193,23 +196,23 @@ class LmsContentController extends Controller
                     $file_path = $request->lms_file;
                 break;
         }
-         
-        
+
+
         $this->validate($request, $rules);
          DB::beginTransaction();
        try{
        $name = $request->title;
         if($name != $record->title)
             $record->slug = $record->makeSlug($name, TRUE);
-      
+
     	$name  						=  $request->title;
 		$record->title 				= $name;
         $record->title              = $name;
-       
+
         $record->subject_id         = $request->subject_id;
         $record->code               = $request->code;
         $record->content_type       = $request->content_type;
-        
+
         $record->file_path          = $file_path;
         $record->description        = $request->description;
         $record->record_updated_by  = Auth::user()->id;
@@ -242,7 +245,7 @@ class LmsContentController extends Controller
             $this->deleteFile($record->file_path, $path);
 
               $record->file_path      = $this->processUpload($request, $record,$file_name, FALSE);
-              
+
               $record->save();
         }
         DB::commit();
@@ -271,18 +274,18 @@ class LmsContentController extends Controller
     public function store(Request $request)
     {
 
-       if(!checkRole(getUserGrade(2)))
+       if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
       }
-    	 
+
 	    $rules = [
          'subject_id'          	        => 'bail|required|integer' ,
          'title'          	   			=> 'bail|required|max:60' ,
          'content_type'                 => 'bail|required',
          'code'                         => 'bail|required|unique:lmscontents',
-        
+
         ];
         $file_path = '';
         switch ($request->content_type) {
@@ -306,13 +309,13 @@ class LmsContentController extends Controller
                     $rules['lms_file'] = 'bail|required';
                     $file_path = $request->lms_file;
                 break;
-            case 'iframe' : 
+            case 'iframe' :
                     $rules['file_path'] = 'bail|required';
                     $file_path = $request->file_path;
         }
-         
-        
-        
+
+
+
         $this->validate($request, $rules);
      DB::beginTransaction();
        try{
@@ -323,12 +326,12 @@ class LmsContentController extends Controller
         $record->subject_id         = $request->subject_id;
         $record->code               = $request->code;
        	$record->content_type 		= $request->content_type;
-       	
+
        	$record->file_path 		   = $file_path;
         $record->description		= $request->description;
         $record->record_updated_by 	= Auth::user()->id;
-       
-     
+
+
         $record->save();
  		 $file_name = 'image';
         if ($request->hasFile($file_name))
@@ -376,18 +379,18 @@ class LmsContentController extends Controller
           flash('oops...!','improper_data_file_submitted', 'error');
        }
      }
-        
+
     	return redirect(URL_LMS_CONTENT);
     }
- 
+
     /**
      * Delete Record based on the provided slug
      * @param  [string] $slug [unique slug]
-     * @return Boolean 
+     * @return Boolean
      */
     public function delete($slug)
     {
-      if(!checkRole(getUserGrade(2)))
+      if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
@@ -403,7 +406,7 @@ class LmsContentController extends Controller
                     $this->deleteFile($record->file_path, $path);
                 $record->delete();
             }
-            
+
             $response['status'] = 1;
             $response['message'] = getPhrase('category_deleted_successfully');
         }
@@ -459,15 +462,15 @@ class LmsContentController extends Controller
             return 'demo';
         }
 
-         
+
          if ($request->hasFile($file_name)) {
           $settings = $this->getSettings();
           $destinationPath      = $settings->contentImagepath;
           $path = $_FILES[$file_name]['name'];
           $ext = pathinfo($path, PATHINFO_EXTENSION);
 
-          $fileName = $record->id.'-'.$file_name.'.'.$ext; 
-          
+          $fileName = $record->id.'-'.$file_name.'.'.$ext;
+
           $request->file($file_name)->move($destinationPath, $fileName);
          if($is_image){
 
@@ -476,6 +479,6 @@ class LmsContentController extends Controller
          }
          return $fileName;
         }
-        
+
      }
 }
