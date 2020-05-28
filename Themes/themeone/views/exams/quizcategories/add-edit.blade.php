@@ -1,5 +1,5 @@
 @extends('layouts.admin.adminlayout')
- 
+
 
 @section('content')
 <div id="page-wrapper">
@@ -14,7 +14,7 @@
 						</ol>
 					</div>
 				</div>
-				@include('errors.errors')	
+				@include('errors.errors')
 				<div class="panel panel-custom col-lg-6 col-lg-offset-3">
 					<div class="panel-heading">
 						<div class="pull-right messages-buttons">
@@ -26,16 +26,18 @@
 					<?php $button_name = getPhrase('create'); ?>
 					@if ($record)
 					 <?php $button_name = getPhrase('update'); ?>
-						{{ Form::model($record, 
-						array('url' => URL_QUIZ_CATEGORY_EDIT.'/'.$record->slug, 
+						{{ Form::model($record,
+						array('url' => URL_QUIZ_CATEGORY_EDIT.'/'.$record->slug,
 						'method'=>'patch', 'files' => true, 'novalidate'=>'','name'=>'formCategories')) }}
 					@else
 						{!! Form::open(array('url' => URL_QUIZ_CATEGORY_ADD, 'method' => 'POST', 'files' => true, 'novalidate'=>'','name'=>'formCategories')) !!}
 					@endif
 
-					 @include('exams.quizcategories.form_elements', 
+					 @include('exams.quizcategories.form_elements',
 					 array('button_name'=> $button_name),
-					 array('record' => $record))
+					 array('record' => $record,
+                        	'sections'=> $sections,
+                            ))
 					{!! Form::close() !!}
 					</div>
 
@@ -59,7 +61,7 @@ file.onchange = function(e){
         case 'jpeg':
         case 'png':
 
-     
+
             break;
         default:
            alertify.error("{{getPhrase('file_type_not_allowed')}}");
@@ -68,4 +70,3 @@ file.onchange = function(e){
 };
  </script>
 @stop
- 

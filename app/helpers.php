@@ -277,7 +277,7 @@ function getUserWithSlug($slug='')
     return FALSE;
  }
 
- function getUserGrade($grade = 5)
+ function getUserGrade($grade = 7)
  {
      switch ($grade) {
          case 1:
@@ -287,18 +287,21 @@ function getUserWithSlug($slug='')
              return ['owner', 'admin'];
              break;
         case 3:
-             return ['owner', 'admin', 'staff'];
+             return ['owner', 'admin', 'teacher'];
              break;
         case 4:
-             return ['owner', 'admin', 'parent'];
+             return ['owner', 'admin', 'parent','teacher'];
              break;
         case 5:
-             return ['student'];
-             break;
-        case 6:
              return ['admin'];
              break;
+        case 6:
+             return ['teacher'];
+             break;
         case 7:
+             return ['student'];
+             break;
+        case 8:
              return ['parent'];
              break;
 
@@ -311,7 +314,7 @@ function getUserWithSlug($slug='')
  function getLayout()
  {
     $layout = 'layouts.student.studentlayout';
-    if(checkRole(getUserGrade(2)))
+    if(checkRole(getUserGrade(3)))
         $layout             = 'layouts.admin.adminlayout';
     if(checkRole(['parent']))
         $layout             = 'layouts.parent.parentlayout';
@@ -349,7 +352,7 @@ function getUserWithSlug($slug='')
 
  function isEligible($slug)
  {
-     if(!checkRole(getUserGrade(2)))
+     if(!checkRole(getUserGrade(4)))
      {
         if(!validateUser($slug))
         {

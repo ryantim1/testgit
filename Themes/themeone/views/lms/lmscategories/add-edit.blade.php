@@ -1,5 +1,5 @@
 @extends('layouts.admin.adminlayout')
- 
+
 
 @section('content')
 <div id="page-wrapper">
@@ -14,7 +14,7 @@
 						</ol>
 					</div>
 				</div>
-				@include('errors.errors')	
+				@include('errors.errors')
 					<div class="panel panel-custom col-lg-6 col-lg-offset-3">
 					<div class="panel-heading">
 						<div class="pull-right messages-buttons">
@@ -26,16 +26,18 @@
 					<?php $button_name = getPhrase('create'); ?>
 					@if ($record)
 					 <?php $button_name = getPhrase('update'); ?>
-						{{ Form::model($record, 
+						{{ Form::model($record,
 						array('url' => URL_LMS_CATEGORIES_EDIT.$record->slug, 'novalidate'=>'','name'=>'formLms ',
 						'method'=>'patch', 'files' => true)) }}
 					@else
 						{!! Form::open(array('url' => URL_LMS_CATEGORIES_ADD, 'method' => 'POST', 'novalidate'=>'','name'=>'formLms ', 'files' => true)) !!}
 					@endif
 
-					 @include('lms.lmscategories.form_elements', 
+					 @include('lms.lmscategories.form_elements',
 					 array('button_name'=> $button_name),
-					 array('record' => $record))
+                     array('record' => $record,
+                        	'sections'=> $sections,
+                            ))
 					{!! Form::close() !!}
 					</div>
 
@@ -59,7 +61,7 @@ file.onchange = function(e){
         case 'jpeg':
         case 'png':
 
-     
+
             break;
         default:
          alertify.error("{{getPhrase('file_type_not_allowed')}}");
@@ -68,4 +70,3 @@ file.onchange = function(e){
 };
  </script>
 @stop
- 

@@ -15,6 +15,7 @@ use Exception;
 use Image;
 use ImageSettings;
 use File;
+use App\User;
 
 class QuizController extends Controller
 {
@@ -42,7 +43,7 @@ class QuizController extends Controller
      */
     public function index()
     {
-      if(!checkRole(getUserGrade(2)))
+      if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
@@ -63,7 +64,7 @@ class QuizController extends Controller
     public function getDatatable($slug = '')
     {
 
-      if(!checkRole(getUserGrade(2)))
+      if(!checkRole(getUserGrade(4)))
       {
         prepareBlockUserMessage();
         return back();
@@ -77,6 +78,7 @@ class QuizController extends Controller
 
             $records = Quiz::join('quizcategories', 'quizzes.category_id', '=', 'quizcategories.id')
             ->select(['title', 'dueration', 'category', 'is_paid', 'total_marks','exam_type','tags','quizzes.slug' ])
+            ->where('quizzes.record_updated_by',Auth::user()->id)
             ->orderBy('quizzes.updated_at', 'desc');
 
 
@@ -86,6 +88,7 @@ class QuizController extends Controller
 
         $records = Quiz::join('quizcategories', 'quizzes.category_id', '=', 'quizcategories.id')
             ->select(['title', 'dueration', 'category', 'is_paid', 'total_marks','exam_type','tags','quizzes.slug' ])
+            ->where('quizzes.record_updated_by',Auth::user()->id)
             ->where('quizzes.category_id', '=', $category->id)
             ->orderBy('quizcategories.updated_at', 'desc');
         }
@@ -141,17 +144,16 @@ class QuizController extends Controller
      */
     public function create()
     {
-      if(!checkRole(getUserGrade(2)))
+      if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
       }
       $data['record']             = FALSE;
       $data['active_class']       = 'exams';
-      $data['categories']         = array_pluck(QuizCategory::all(), 'category', 'id');
+      $data['categories']         = array_pluck(QuizCategory::where('record_updated_by',Auth::user()->id)->get(), 'category', 'id');
       $data['instructions']       = array_pluck(App\Instruction::all(), 'title', 'id');
       $data['exam_types']         = App\ExamType::where('status','=',1)->get()->pluck('title','code')->toArray();
-      // dd($data);
       $data['title']              = getPhrase('create_quiz');
       // return view('exams.quiz.add-edit', $data);
 
@@ -166,7 +168,7 @@ class QuizController extends Controller
      */
     public function edit($slug)
     {
-      if(!checkRole(getUserGrade(2)))
+      if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
@@ -180,7 +182,7 @@ class QuizController extends Controller
       $data['active_class']     = 'exams';
       $data['settings']         = FALSE;
       $data['instructions']     = array_pluck(App\Instruction::all(), 'title', 'id');
-      $data['categories']       = array_pluck(QuizCategory::all(), 'category', 'id');
+      $data['categories']         = array_pluck(QuizCategory::where('record_updated_by',Auth::user()->id)->get(), 'category', 'id');
       $data['exam_types']         = App\ExamType::get()->pluck('title','code')->toArray();
 
       $data['title']            = getPhrase('edit_quiz');
@@ -199,7 +201,7 @@ class QuizController extends Controller
     public function update(Request $request, $slug)
     {
       // dd($request);
-      if(!checkRole(getUserGrade(2)))
+      if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
@@ -265,7 +267,7 @@ class QuizController extends Controller
 
         $record->description    = $request->description;
         $record->record_updated_by  = Auth::user()->id;
-
+        $record->section_id         = array_pluck(QuizCategory::where('id',$request->category_id)->get(), 'section_id')[0];
         $record->start_date = $request->start_date;
         $record->end_date = $request->end_date;
         $record->exam_type          = $request->exam_type;
@@ -304,7 +306,7 @@ class QuizController extends Controller
     public function store(Request $request)
     {
 
-      if(!checkRole(getUserGrade(2)))
+      if(!checkRole(getUserGrade(3)))
       {
         prepareBlockUserMessage();
         return back();
@@ -365,6 +367,7 @@ class QuizController extends Controller
 
         $record->description    = $request->description;
         $record->record_updated_by  = Auth::user()->id;
+        $record->section_id         = array_pluck(QuizCategory::where('id',$request->category_id)->get(), 'section_id')[0];
         $record->exam_type          = $request->exam_type;
         $record->has_language       = $request->has_language;
 
@@ -474,7 +477,8 @@ class QuizController extends Controller
      */
     public function updateQuestions($slug)
     {
-       if(!checkRole(getUserGrade(2)))
+    
+       if(!checkRole(getUserGrade(3)))
        {
             prepareBlockUserMessage();
             return back();
@@ -577,7 +581,7 @@ class QuizController extends Controller
 
        // dd($request);
 
-        if(!checkRole(getUserGrade(2)))
+        if(!checkRole(getUserGrade(3)))
         {
             prepareBlockUserMessage();
             return back();

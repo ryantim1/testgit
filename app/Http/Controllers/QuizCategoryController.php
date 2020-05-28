@@ -41,7 +41,7 @@ class QuizCategoryController extends Controller
      */
     public function index()
     {
-        if(!checkRole(getUserGrade(2)))
+        if(!checkRole(getUserGrade(3)))
         {
           prepareBlockUserMessage();
           return back();
@@ -62,7 +62,7 @@ class QuizCategoryController extends Controller
     public function getDatatable()
     {
 
-        if(!checkRole(getUserGrade(2)))
+        if(!checkRole(getUserGrade(3)))
         {
           prepareBlockUserMessage();
           return back();
@@ -70,7 +70,7 @@ class QuizCategoryController extends Controller
 
          $records = QuizCategory::select([
          	'category', 'image', 'description', 'id','slug'])
-            ->whereIn('record_updated_by',User::select('id')->where('institute_id',Auth::user()->institute_id)->pluck('id'))
+            ->where('record_updated_by',Auth::user()->id)
          ->orderBy('updated_at', 'desc')
          ->get();
 
@@ -114,7 +114,7 @@ class QuizCategoryController extends Controller
      */
     public function create()
     {
-        if(!checkRole(getUserGrade(2)))
+        if(!checkRole(getUserGrade(3)))
         {
           prepareBlockUserMessage();
           return back();
@@ -123,6 +123,8 @@ class QuizCategoryController extends Controller
     	$data['record']         	= FALSE;
     	$data['active_class']       = 'exams';
     	$data['title']              = getPhrase('create_category');
+        $data['sections']           = array_pluck(User::where('institute_id',Auth::user()->institute_id)->whereNotNull('section_id')->distinct()->get(),'section_name','section_id');
+
     	// return view('exams.quizcategories.add-edit', $data);
 
            $view_name = getTheme().'::exams.quizcategories.add-edit';
@@ -136,7 +138,7 @@ class QuizCategoryController extends Controller
      */
     public function edit($slug)
     {
-         if(!checkRole(getUserGrade(2)))
+         if(!checkRole(getUserGrade(3)))
         {
           prepareBlockUserMessage();
           return back();
@@ -149,6 +151,8 @@ class QuizCategoryController extends Controller
     	$data['record']       		= $record;
     	$data['active_class']       = 'exams';
     	$data['title']              = getPhrase('edit_category');
+        $data['sections']           = array_pluck(User::where('institute_id',Auth::user()->institute_id)->whereNotNull('section_id')->distinct()->get(),'section_name','section_id');
+
     	// return view('exams.quizcategories.add-edit', $data);
 
           $view_name = getTheme().'::exams.quizcategories.add-edit';
@@ -163,7 +167,7 @@ class QuizCategoryController extends Controller
      */
     public function update(Request $request, $slug)
     {
-         if(!checkRole(getUserGrade(2)))
+         if(!checkRole(getUserGrade(3)))
         {
           prepareBlockUserMessage();
           return back();
@@ -187,6 +191,7 @@ class QuizCategoryController extends Controller
     	$record->category 			= $name;
         $record->description		= $request->description;
         $record->record_updated_by 	= Auth::user()->id;
+        $record->section_id         = $request->section_id;
         $record->save();
  		 $file_name = 'catimage';
  		if ($request->hasFile($file_name))
@@ -210,7 +215,7 @@ class QuizCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        if(!checkRole(getUserGrade(2)))
+        if(!checkRole(getUserGrade(3)))
         {
           prepareBlockUserMessage();
           return back();
@@ -227,6 +232,7 @@ class QuizCategoryController extends Controller
        	$record->slug 				= $record->makeSlug($name);
         $record->description		= $request->description;
         $record->record_updated_by 	= Auth::user()->id;
+        $record->section_id         = $request->section_id;
         $record->save();
  		 $file_name = 'catimage';
         if ($request->hasFile($file_name))

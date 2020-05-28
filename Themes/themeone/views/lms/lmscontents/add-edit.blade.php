@@ -1,5 +1,5 @@
 @extends($layout)
- 
+
 @section('content')
 
 <div id="page-wrapper">
@@ -16,12 +16,12 @@
 				</div>
 					@include('errors.errors')
 				<!-- /.row -->
-				<?php 
-					$settings = ($record) ? $settings : ''; 
+				<?php
+					$settings = ($record) ? $settings : '';
 				?>
 
 				<div class="panel panel-custom col-lg-6 col-lg-offset-3" ng-init="initAngData('{{ $settings }}');" ng-controller="angLmsController">
-					<div class="panel-heading"> 
+					<div class="panel-heading">
 						<div class="pull-right messages-buttons">
 							<a href="{{URL_LMS_CONTENT}}" class="btn  btn-primary button" >{{ getPhrase('list')}}</a>
 						</div>
@@ -31,31 +31,31 @@
 					<?php $button_name = getPhrase('create'); ?>
 					@if ($record)
 					 <?php $button_name = getPhrase('update'); ?>
-						{{ Form::model($record, 
+						{{ Form::model($record,
 						array('url' => URL_LMS_CONTENT_EDIT. $record->slug, 'novalidate'=>'','name'=>'formLms ',
 						'method'=>'patch', 'files' => true)) }}
 					@else
-						{!! Form::open(array('url' => URL_LMS_CONTENT_ADD, 
+						{!! Form::open(array('url' => URL_LMS_CONTENT_ADD,
 							'novalidate'=>'','name'=>'formLms ',
 						'method' => 'POST', 'files' => true)) !!}
 					@endif
-					 @include('lms.lmscontents.form_elements', 
+					 @include('lms.lmscontents.form_elements',
 					 array('button_name'=> $button_name),
 					 array('subjects'=>$subjects, 'record'=>$record))
 					 	 	
 					{!! Form::close() !!}
-					</div> 
-  
+					</div>
+
 				</div>
 			</div>
 			<!-- /.container-fluid -->
 		</div>
 		<!-- /#page-wrapper -->
 @stop
-@section('footer_scripts')   
+@section('footer_scripts')
 @include('lms.lmscontents.scripts.js-scripts')
 @include('common.validations', array('isLoaded'=>'1'));
-@include('common.editor'); 
+@include('common.editor');
   @include('common.alertify')
    <script>
  	var file = document.getElementById('image_input');
@@ -68,7 +68,7 @@ file.onchange = function(e){
         case 'jpeg':
         case 'png':
 
-     
+
             break;
         default:
                alertify.error("{{getPhrase('file_type_not_allowed')}}");
@@ -77,4 +77,3 @@ file.onchange = function(e){
 };
  </script>
 @stop
- 

@@ -20,7 +20,7 @@
 
 <div class="panel panel-custom col-lg-6  col-lg-offset-3">
 <div class="panel-heading">
-@if(checkRole(getUserGrade(2))) 
+@if(checkRole(getUserGrade(2)))
 <div class="pull-right messages-buttons"><a href="{{URL_USERS}}" class="btn  btn-primary button" >{{ getPhrase('list')}}</a></div>
 @endif
 <h1>{{ $title }}  </h1>
@@ -29,15 +29,19 @@
 <div class="panel-body form-auth-style">
 <?php $button_name = getPhrase('create'); ?>
 @if ($record)
-<?php $button_name = getPhrase('update'); ?>
-{{ Form::model($record, 
-array('url' => URL_USERS_EDIT.$record->slug, 
+<?php $button_name = getPhrase('update');  ?>
+{{ Form::model($record,
+array('url' => URL_USERS_EDIT.$record->slug,
 'method'=>'patch','novalidate'=>'','name'=>'formUsers ', 'files'=>'true' )) }}
 @else
 {!! Form::open(array('url' => URL_USERS_ADD, 'method' => 'POST', 'novalidate'=>'','name'=>'formUsers ', 'files'=>'true')) !!}
 @endif
 
-@include('users.form_elements', array('button_name'=> $button_name, 'record' => $record))
+@if((checkRole(getUserGrade(2))))
+    @include('users.form_elements', array('button_name'=> $button_name, 'record' => $record, 'sections' => $sections))
+@else
+    @include('users.form_elements', array('button_name'=> $button_name, 'record' => $record))
+@endif
 
 {!! Form::close() !!}
 </div>
@@ -62,7 +66,7 @@ file.onchange = function(e){
         case 'jpeg':
         case 'png':
 
-     
+
             break;
         default:
                alertify.error("{{getPhrase('file_type_not_allowed')}}");

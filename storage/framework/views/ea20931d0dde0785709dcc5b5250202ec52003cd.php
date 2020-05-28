@@ -13,7 +13,7 @@
 							<?php if(checkRole(getUserGrade(2))): ?>
 							<li><a href="<?php echo e(URL_USERS); ?>"><?php echo e(getPhrase('users')); ?></a> </li>
 							<?php endif; ?>
-                            
+
 							<?php if(checkRole(getUserGrade(7))): ?>
 							<li><a href="<?php echo e(URL_PARENT_CHILDREN); ?>"><?php echo e(getPhrase('users')); ?></a> </li>
 							<?php endif; ?>
@@ -29,7 +29,7 @@
 				 		<h1><?php echo e(getPhrase('details_of').' '.$record->name); ?>
 
 
-				 		 <a class="btn btn-primary pull-right" href="<?php echo e(URL_USERS_EDIT.Auth::user()->slug); ?>" >Edit Profile</a>
+				 		 <a class="btn btn-primary pull-right" href="<?php echo e(URL_USERS_EDIT.$record->slug); ?>" >Edit Profile</a>
 
 				 		</h1>
 				 	</div>
@@ -67,6 +67,14 @@
 						<table class="table table-bordered table-hover">
 							<caption><h5>Personal Details</h5></caption>
 
+							<tr>
+								<td><strong>Institute</strong></td>
+								<td><?php echo e($record->inst_name); ?></td>
+							</tr>
+							<tr>
+								<td><strong>Class</strong></td>
+								<td><?php echo e($record->section_name); ?></td>
+							</tr>
 							<tr>
 								<td><strong>Phone</strong></td>
 								<td><?php echo e($record->phone); ?></td>

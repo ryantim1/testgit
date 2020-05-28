@@ -35,7 +35,166 @@ class DashboardController extends Controller
         $data['title']          = getPhrase('dashboard');
         $role = getRole();
 
-        if ($role=='admin' || $role=='owner') {
+        if ($role=='owner') {
+
+              //Artisan::call('view:clear');
+
+             $roles = App\Role::get()->pluck('id');
+             $dataset = [];
+             $labels = [];
+             $bgcolor = [];
+             $border_color = [];
+             foreach($roles as $key => $value)
+             {
+                $color_number = rand(0,999);
+                $labels[] = ucfirst(getRoleData($value));
+                $dataset[] = App\User::where('role_id', '=', $value)->get()->count();
+                $bgcolor[] = getColor('',$color_number);
+                $border_color[] = getColor('background',$color_number);
+             }
+
+
+            $dataset_label[] = 'lbl';
+
+            $chart_data['type'] = 'pie';
+            //horizontalBar, bar, polarArea, line, doughnut, pie
+            $chart_data['data']   = (object) array(
+                    'labels'            => $labels,
+                    'dataset'           => $dataset,
+                    'dataset_label'     => $dataset_label,
+                    'bgcolor'           => $bgcolor,
+                    'border_color'      => $border_color
+                    );
+
+           $data['chart_data'][] = (object)$chart_data;
+           $data['chart_heading']         = getPhrase('user_statistics');
+
+           $data['payments_chart_data'] = (object)$this->getPaymentStats();
+           $data['payments_monthly_data'] = (object)$this->getPaymentMonthlyStats();
+           $data['demanding_quizzes'] = (object)$this->getDemandingQuizzes();
+           $data['demanding_paid_quizzes'] = (object)$this->getDemandingQuizzes('paid');
+
+           $data['layout']        = getLayout();
+
+            //   $data['right_bar']          = FALSE;
+
+            // $data['right_bar_path']     = 'common.right-bar-chart';
+            $data['right_bar_data']     = array('chart_data' => $data['chart_data'] );
+            $data['ids'] = array('myChart0' );
+
+            // return view('admin.dashboard', $data);
+
+            $view_name = getTheme().'::admin.dashboard';
+            return view($view_name, $data);
+        }
+
+        else if ($role=='admin') {
+
+              //Artisan::call('view:clear');
+
+             $roles = App\Role::get()->pluck('id');
+             $dataset = [];
+             $labels = [];
+             $bgcolor = [];
+             $border_color = [];
+             foreach($roles as $key => $value)
+             {
+                $color_number = rand(0,999);
+                $labels[] = ucfirst(getRoleData($value));
+                $dataset[] = App\User::where('role_id', '=', $value)->get()->count();
+                $bgcolor[] = getColor('',$color_number);
+                $border_color[] = getColor('background',$color_number);
+             }
+
+
+            $dataset_label[] = 'lbl';
+
+            $chart_data['type'] = 'pie';
+            //horizontalBar, bar, polarArea, line, doughnut, pie
+            $chart_data['data']   = (object) array(
+                    'labels'            => $labels,
+                    'dataset'           => $dataset,
+                    'dataset_label'     => $dataset_label,
+                    'bgcolor'           => $bgcolor,
+                    'border_color'      => $border_color
+                    );
+
+           $data['chart_data'][] = (object)$chart_data;
+           $data['chart_heading']         = getPhrase('user_statistics');
+
+           $data['payments_chart_data'] = (object)$this->getPaymentStats();
+           $data['payments_monthly_data'] = (object)$this->getPaymentMonthlyStats();
+           $data['demanding_quizzes'] = (object)$this->getDemandingQuizzes();
+           $data['demanding_paid_quizzes'] = (object)$this->getDemandingQuizzes('paid');
+
+           $data['layout']        = getLayout();
+
+           //   $data['right_bar']          = FALSE;
+
+           // $data['right_bar_path']     = 'common.right-bar-chart';
+           $data['right_bar_data']     = array('chart_data' => $data['chart_data'] );
+           $data['ids'] = array('myChart0' );
+
+           // return view('admin.dashboard', $data);
+
+            $view_name = getTheme().'::admin.dashboard';
+            return view($view_name, $data);
+        }
+
+        else if ($role=='class-teacher') {
+
+              //Artisan::call('view:clear');
+
+             $roles = App\Role::get()->pluck('id');
+             $dataset = [];
+             $labels = [];
+             $bgcolor = [];
+             $border_color = [];
+             foreach($roles as $key => $value)
+             {
+                $color_number = rand(0,999);
+                $labels[] = ucfirst(getRoleData($value));
+                $dataset[] = App\User::where('role_id', '=', $value)->get()->count();
+                $bgcolor[] = getColor('',$color_number);
+                $border_color[] = getColor('background',$color_number);
+             }
+
+
+            $dataset_label[] = 'lbl';
+
+            $chart_data['type'] = 'pie';
+            //horizontalBar, bar, polarArea, line, doughnut, pie
+            $chart_data['data']   = (object) array(
+                    'labels'            => $labels,
+                    'dataset'           => $dataset,
+                    'dataset_label'     => $dataset_label,
+                    'bgcolor'           => $bgcolor,
+                    'border_color'      => $border_color
+                    );
+
+           $data['chart_data'][] = (object)$chart_data;
+           $data['chart_heading']         = getPhrase('user_statistics');
+
+           $data['payments_chart_data'] = (object)$this->getPaymentStats();
+           $data['payments_monthly_data'] = (object)$this->getPaymentMonthlyStats();
+           $data['demanding_quizzes'] = (object)$this->getDemandingQuizzes();
+           $data['demanding_paid_quizzes'] = (object)$this->getDemandingQuizzes('paid');
+
+           $data['layout']        = getLayout();
+
+           //   $data['right_bar']          = FALSE;
+
+           // $data['right_bar_path']     = 'common.right-bar-chart';
+           $data['right_bar_data']     = array('chart_data' => $data['chart_data'] );
+           $data['ids'] = array('myChart0' );
+
+           // return view('admin.dashboard', $data);
+
+            $view_name = getTheme().'::admin.dashboard';
+            return view($view_name, $data);
+        }
+
+        else if ($role=='teacher') {
 
               //Artisan::call('view:clear');
 

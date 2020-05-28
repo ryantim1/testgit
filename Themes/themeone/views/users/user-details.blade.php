@@ -13,7 +13,7 @@
 							@if(checkRole(getUserGrade(2)))
 							<li><a href="{{URL_USERS}}">{{ getPhrase('users') }}</a> </li>
 							@endif
-                            
+
 							@if(checkRole(getUserGrade(7)))
 							<li><a href="{{URL_PARENT_CHILDREN}}">{{ getPhrase('users') }}</a> </li>
 							@endif
@@ -28,7 +28,7 @@
 				 	<div class="panel-heading">
 				 		<h1>{{ getPhrase('details_of').' '.$record->name }}
 
-				 		 <a class="btn btn-primary pull-right" href="{{URL_USERS_EDIT.Auth::user()->slug}}" >Edit Profile</a>
+				 		 <a class="btn btn-primary pull-right" href="{{URL_USERS_EDIT.$record->slug}}" >Edit Profile</a>
 
 				 		</h1>
 				 	</div>
@@ -66,6 +66,14 @@
 						<table class="table table-bordered table-hover">
 							<caption><h5>Personal Details</h5></caption>
 
+							<tr>
+								<td><strong>Institute</strong></td>
+								<td>{{$record->inst_name}}</td>
+							</tr>
+							<tr>
+								<td><strong>Class</strong></td>
+								<td>{{$record->section_name}}</td>
+							</tr>
 							<tr>
 								<td><strong>Phone</strong></td>
 								<td>{{$record->phone}}</td>
